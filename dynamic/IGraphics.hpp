@@ -6,7 +6,7 @@ public:
   IGraphics();
   virtual ~IGraphics();
   /* use virtual otherwise linker will try to perform static linkage */
-  virtual void printSquare();
+  virtual void printSquare() = 0;
 };
 
 #endif
