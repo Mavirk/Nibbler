@@ -21,6 +21,7 @@ class Game {
 
 	public:
 		void* handle;
+		IGraphics* oldlib;
 		IGraphics* lib;
 		IGraphics* (*create)();
 		void (*destroy)(IGraphics*);

@@ -11,9 +11,9 @@ int		main(int argc, char **argv) {
     }
 
 	int		width = 480;
-	int		height = 240;
+	int		height = 480;
 	int		size = 10;
-	game = new Game(argv, width, height, size );
+	game = new Game(argv, width, height, size);
 	game->run();
 	return 0;
 }

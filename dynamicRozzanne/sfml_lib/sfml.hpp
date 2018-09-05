@@ -5,6 +5,7 @@
 #pragma once
 
 #include <iostream>
+#include <unistd.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_ttf.h>
 #include "../IGraphics.hpp"

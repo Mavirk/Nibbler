@@ -1,11 +1,11 @@
-#include "sdl.hpp"
+#include "sfml.hpp"
 
 extern "C" Graphics* create_object(){
   return new Graphics;
 }
 
 extern "C" void destroy_object( Graphics* object ){
-  delete object;
+	delete object;
 }
 
 Graphics::Graphics( void ) : size( 10 ) {
@@ -27,7 +27,7 @@ Graphics::Graphics( void ) : size( 10 ) {
 // }
 
 Graphics::~Graphics( void ) {
-	SDL_Quit();
+	clean();
 	return ;
 }
 
@@ -38,8 +38,7 @@ void	Graphics::init( std::string title, int xpos, int ypos, int width, int heigh
 
 	if ( SDL_Init(SDL_INIT_EVERYTHING) == 0 ) {
 		std::cout << "Subsystems init" << std::endl;
-
-		this->_win = SDL_CreateWindow( title.c_str(), xpos, ypos, width, height, flags );
+		this->_win = SDL_CreateWindow( title.c_str(), xpos * 2, ypos, width, height, flags );
 		if ( this->_win ) {
 			this->maxWidth = width;
 			this->maxHeight = height;
@@ -64,8 +63,11 @@ void	Graphics::init( std::string title, int xpos, int ypos, int width, int heigh
 	}
 
 	this->_font = TTF_OpenFont( "OpenSans-ExtraBold.ttf", 18 );
-	if ( this->_font == NULL )
+	if ( this->_font == NULL ){
 		this->_isRunning = false;
+		// std::cout << "asdasdasd";
+	}
+	// std::cout << _isRunning << std::endl;
 }
 
 char	Graphics::handleInput( void ) {
@@ -90,6 +92,12 @@ char	Graphics::handleInput( void ) {
 			case SDLK_UP:
 				input = 'u';
 				break ;
+			case SDLK_1:
+				input = '1';
+				break ;
+			case SDLK_2:
+				input = '2';
+				break ;
 			default:
 				break ;
 		}
@@ -107,7 +115,7 @@ void	Graphics::render( Snake& snake ) {
 	SDL_RenderClear( this->_ren );
 
 	// render the boarder etc
-	SDL_SetRenderDrawColor( this->_ren, 0, 0, 0, 255 );
+	SDL_SetRenderDrawColor( this->_ren, 255, 255, 255, 255 );
 	// top boarder
 	SDL_Rect	boarderTop = { 0, 0, this->maxWidth, 10 };
 	SDL_RenderFillRect( this->_ren, &boarderTop );
@@ -123,7 +131,7 @@ void	Graphics::render( Snake& snake ) {
 
 	// process the snake
 	std::vector<snakePart>	snakeTemp = snake.getSnake();
-	SDL_SetRenderDrawColor( this->_ren, 0, 0, 255, 255 );
+	SDL_SetRenderDrawColor( this->_ren, 0, 255, 255, 255 );
 	for ( unsigned long i = 0; i < snakeTemp.size(); i++ ){
 		drawRect( snakeTemp[i].x, snakeTemp[i].y );
 		SDL_RenderFillRect( this->_ren, &rect );
@@ -138,7 +146,7 @@ void	Graphics::render( Snake& snake ) {
 	score += std::to_string( snake.score );
 	drawMessage( score.c_str(), 20, this->maxHeight - 32, 255, 255, 255 );
 
-	SDL_SetRenderDrawColor( this->_ren, 0, 255, 0, 255 );
+	SDL_SetRenderDrawColor( this->_ren, 255, 255, 255, 255 );
 	SDL_RenderPresent( this->_ren );
 }
 

@@ -6,7 +6,7 @@ Game::Game(char** argv, int width, int height, int size ) : _size( size ) {
     _width = width;
     _height = height;
 	if (static_cast<std::string>(argv[1]) == "1")
-        handle = dlopen("sdl.so", RTLD_LAZY );
+        handle = dlopen("sdl.so", RTLD_LAZY);
     else if (static_cast<std::string>(argv[1]) == "2")
         handle = dlopen("sfml.so", RTLD_LAZY );
     if (!handle){
@@ -20,9 +20,7 @@ Game::Game(char** argv, int width, int height, int size ) : _size( size ) {
     }
     destroy = (void (*)(IGraphics*))dlsym(handle, "destroy_object");
     lib = create();
-
 	this->input = '\0';
-	// this->_gfx = Graphics();
 	this->_snake = Snake( width, height, this->_size );
 	this->_snake.makeFood();
 	this->delay = 200000;
@@ -48,14 +46,15 @@ Game::loadLib(int i){
     const char* filename;
     switch (i) {
         case 1 :
+            dlclose(handle);
             filename = "sdl.so";
             break;
         case 2 :
+            dlclose(handle);
             filename = "sfml.so";
             break;
     }
-    handle = dlopen(filename, RTLD_LAZY );
-    destroy(lib);
+    handle = dlopen(filename, RTLD_LAZY);
     if (!handle){
         std::cout << "bad handle" << std::endl;
         return;
@@ -70,6 +69,21 @@ Game::loadLib(int i){
 void	Game::handleEvents( void ) {
 	usleep( this->delay );
 	this->input = lib->handleInput();
+    std::cout << "input " << input << std::endl;
+    switch(input){
+        case '1':
+            clean();
+            loadLib(1);
+            init( "sdl", _width, _height, _width, _height, false );
+            break;
+        case '2':
+            clean();
+            loadLib(2);
+            init( "sfml", _width, _height, _width, _height, false );
+            break;
+        default:
+            break;
+    }
 	this->_snake.moveSnake( this->input );
 }
 

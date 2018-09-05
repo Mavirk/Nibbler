@@ -5,7 +5,7 @@ extern "C" Graphics* create_object(){
 }
 
 extern "C" void destroy_object( Graphics* object ){
-  delete object;
+	delete object;
 }
 
 Graphics::Graphics( void ) : size( 10 ) {
@@ -27,7 +27,7 @@ Graphics::Graphics( void ) : size( 10 ) {
 // }
 
 Graphics::~Graphics( void ) {
-	SDL_Quit();
+	clean();
 	return ;
 }
 
@@ -64,8 +64,11 @@ void	Graphics::init( std::string title, int xpos, int ypos, int width, int heigh
 	}
 
 	this->_font = TTF_OpenFont( "OpenSans-ExtraBold.ttf", 18 );
-	if ( this->_font == NULL )
+	if ( this->_font == NULL ){
 		this->_isRunning = false;
+		// std::cout << "asdasdasd";
+	}
+	// std::cout << _isRunning << std::endl;
 }
 
 char	Graphics::handleInput( void ) {
@@ -89,6 +92,12 @@ char	Graphics::handleInput( void ) {
 				break ;
 			case SDLK_UP:
 				input = 'u';
+				break ;
+			case SDLK_1:
+				input = '1';
+				break ;
+			case SDLK_2:
+				input = '2';
 				break ;
 			default:
 				break ;
@@ -123,7 +132,7 @@ void	Graphics::render( Snake& snake ) {
 
 	// process the snake
 	std::vector<snakePart>	snakeTemp = snake.getSnake();
-	SDL_SetRenderDrawColor( this->_ren, 0, 0, 255, 255 );
+	SDL_SetRenderDrawColor( this->_ren, 255, 0, 255, 255 );
 	for ( unsigned long i = 0; i < snakeTemp.size(); i++ ){
 		drawRect( snakeTemp[i].x, snakeTemp[i].y );
 		SDL_RenderFillRect( this->_ren, &rect );
