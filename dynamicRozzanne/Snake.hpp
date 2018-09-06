@@ -20,17 +20,18 @@ class Snake {
 	private:
 		int			_length;
 		char		_direction;
-		int			_xPos;
-		int			_yPos;
 		int			_size;
 
 	public:
 		std::vector<snakePart>	snake;
+		int			xPos;
+		int			yPos;
 		int			maxX;
 		int			maxY;
 		snakePart	food;
 		bool		eat;
 		int			score;
+		int			delay;
 
 		Snake( void );
 		Snake( int maxX, int maxY, int size );

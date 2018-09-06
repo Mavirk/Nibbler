@@ -1,102 +1,88 @@
 #include "sfml.hpp"
 
-extern "C" Graphics* create_object(){
-  return new Graphics;
+extern "C" SFML* create_object(){
+  return new SFML;
 }
 
-extern "C" void destroy_object( Graphics* object ){
+extern "C" void destroy_object( SFML* object ){
 	delete object;
 }
 
-Graphics::Graphics( void ) : size( 10 ) {
-	this->_win = NULL;
-	this->_ren = NULL;
+SFML::SFML( void ) {
 	this->_isRunning = true;
-	this->_surface = NULL;
-	this->_texture = NULL;
-	this->_font = NULL;
+	this->_win = NULL;
+	std::cout << "Making SFML" << std::endl;
 	return ;
 }
 
-// Graphics::Graphics( const Graphics& copy ) {
+SFML::SFML( const SFML& copy ) {
+	*this = copy;
+}
 
-// }
+SFML&	SFML::operator=( const SFML& rhs ) {
+	this->maxWidth = rhs.maxWidth;
+	this->maxHeight = rhs.maxHeight;
+	this->_win = new sf::RenderWindow( sf::VideoMode( rhs.maxWidth, rhs.maxHeight ), "Snake Game SFML" );
+	this->_font = rhs._font;
+	this->_isRunning = rhs._isRunning;
+	this->_size = rhs._size;
+	return *this;
+}
 
-// Graphics&	Graphics::operator=( const Graphics& rhs ) {
-
-// }
-
-Graphics::~Graphics( void ) {
-	clean();
+SFML::~SFML( void ) {
+	this->_win->close();
+	std::cout << "Ending SFML" << std::endl;
 	return ;
 }
 
-void	Graphics::init( std::string title, int xpos, int ypos, int width, int height, bool fullscreen ) {
-	int		flags = 0;
-	if ( fullscreen )
-		flags = SDL_WINDOW_FULLSCREEN;
+void	SFML::init( int width, int height, int size ) {
+	std::cout << "INIT WINDOW" << std::endl;
+	this->_size = size * 2;
+	this->maxWidth = width * 2;
+	this->maxHeight = height * 2;
 
-	if ( SDL_Init(SDL_INIT_EVERYTHING) == 0 ) {
-		std::cout << "Subsystems init" << std::endl;
-		this->_win = SDL_CreateWindow( title.c_str(), xpos * 2, ypos, width, height, flags );
-		if ( this->_win ) {
-			this->maxWidth = width;
-			this->maxHeight = height;
-			std::cout << "Window created" << std::endl;
-		}
+	this->_win = new sf::RenderWindow( sf::VideoMode( this->maxWidth, this->maxHeight ), "Snake Game SFML" );
 
-		this->_ren = SDL_CreateRenderer( this->_win, -1, 0 );
-		if ( this->_ren ) {
-			// set the render draw color
-			SDL_RenderSetLogicalSize( this->_ren, width, height );
-			SDL_SetRenderDrawColor( this->_ren, 255, 255, 255, 255 );
-			std::cout << "Renderer created" << std::endl;
-		}
-
+	if ( this->_win->isOpen() ) {
+		std::cout << "The window is open" << std::endl;
 		this->_isRunning = true;
 	} else {
+		std::cout << "Error: The window did not open" << std::endl;
 		this->_isRunning = false;
 	}
 
-	if ( TTF_Init() == -1 ) {
+	if ( !this->_font.loadFromFile( "OpenSans-ExtraBold.ttf" ) ) {
 		this->_isRunning = false;
 	}
-
-	this->_font = TTF_OpenFont( "OpenSans-ExtraBold.ttf", 18 );
-	if ( this->_font == NULL ){
-		this->_isRunning = false;
-		// std::cout << "asdasdasd";
-	}
-	// std::cout << _isRunning << std::endl;
 }
 
-char	Graphics::handleInput( void ) {
-	SDL_Event		event;
-	SDL_PollEvent(&event);
-	char			input = '\0';
+char	SFML::handleInput( void ) {
+	sf::Event	event;
+	char		input = '\0';
 
-	if ( event.type == SDL_QUIT ) {
-		this->_isRunning = false;
-		input = 'q';
-	} else if ( event.type == SDL_KEYDOWN ) {
-		switch ( event.key.keysym.sym ) {
-			case SDLK_RIGHT:
-				input = 'r';
+	if ( this->_win->pollEvent( event ) ) {
+		switch ( event.type ) {
+			case sf::Event::KeyPressed:
+				if ( event.key.code == sf::Keyboard::Left ) {
+					input = 'l';
+				} else if ( event.key.code == sf::Keyboard::Right ) {
+					input = 'r';
+				} else if ( event.key.code == sf::Keyboard::Up ) {
+					input = 'u';
+				} else if ( event.key.code == sf::Keyboard::Down ) {
+					input = 'd';
+				} else if ( event.key.code == sf::Keyboard::Num1 ) {
+					input = '1';
+				} else if ( event.key.code == sf::Keyboard::Num2 ) {
+					input = '2';
+				} else if ( event.key.code == sf::Keyboard::Num3 ) {
+					input = '3';
+				} else if ( event.key.code == sf::Keyboard::Escape ) {
+					this->_isRunning = false;
+				}
 				break ;
-			case SDLK_LEFT:
-				input = 'l';
-				break ;
-			case SDLK_DOWN:
-				input = 'd';
-				break ;
-			case SDLK_UP:
-				input = 'u';
-				break ;
-			case SDLK_1:
-				input = '1';
-				break ;
-			case SDLK_2:
-				input = '2';
+			case sf::Event::Closed:
+				this->_isRunning = false;
 				break ;
 			default:
 				break ;
@@ -106,83 +92,63 @@ char	Graphics::handleInput( void ) {
 	return input;
 }
 
-void	Graphics::update( void ) {
-	return ;
-}
+void	SFML::render( Snake& snake ) {
 
-void	Graphics::render( Snake& snake ) {
-	// this is where we would add stuff to render
-	SDL_RenderClear( this->_ren );
+	this->_win->clear( sf::Color( 255, 255, 255 ) );
 
-	// render the boarder etc
-	SDL_SetRenderDrawColor( this->_ren, 255, 255, 255, 255 );
-	// top boarder
-	SDL_Rect	boarderTop = { 0, 0, this->maxWidth, 10 };
-	SDL_RenderFillRect( this->_ren, &boarderTop );
-	// left boarder
-	SDL_Rect	boarderLeft = { 0, 0, 10, this->maxHeight };
-	SDL_RenderFillRect( this->_ren, &boarderLeft );
-	// right boarder
-	SDL_Rect	boarderRight = { this->maxWidth - 10, 0, 10, this->maxHeight };
-	SDL_RenderFillRect( this->_ren, &boarderRight );
-	// bottom boarder
-	SDL_Rect	boarderBottom = { 0, this->maxHeight - 30, this->maxWidth, 30 };
-	SDL_RenderFillRect( this->_ren, &boarderBottom );
-
-	// process the snake
+	// render food
+	sf::RectangleShape		rect( sf::Vector2f( this->_size, this->_size ) );
+	rect.setFillColor( sf::Color::Cyan );
+	rect.setPosition( snake.food.x * 2, snake.food.y * 2 );
+	this->_win->draw( rect );
+	// render snake
 	std::vector<snakePart>	snakeTemp = snake.getSnake();
-	SDL_SetRenderDrawColor( this->_ren, 0, 255, 255, 255 );
-	for ( unsigned long i = 0; i < snakeTemp.size(); i++ ){
-		drawRect( snakeTemp[i].x, snakeTemp[i].y );
-		SDL_RenderFillRect( this->_ren, &rect );
+	for ( unsigned int i = 0; i < snakeTemp.size(); i ++ ){
+		sf::RectangleShape		snake( sf::Vector2f( this->_size, this->_size ) );
+		if (i == 0)
+			snake.setFillColor( sf::Color::Black );
+		else snake.setFillColor( sf::Color::Red );
+		snake.setPosition( snakeTemp[i].x * 2, snakeTemp[i].y * 2 );
+		this->_win->draw( snake );
 	}
 
-	// print food to window
-	SDL_SetRenderDrawColor( this->_ren, 255, 0, 0, 255 );
-	drawRect( snake.food.x, snake.food.y );
-	SDL_RenderFillRect( this->_ren, &rect );
+	// render boader
+	sf::RectangleShape		boarderLeft( sf::Vector2f( this->_size, this->maxHeight ) );
+	boarderLeft.setFillColor( sf::Color::Black );
+	boarderLeft.setPosition( 0, 0 );
+	this->_win->draw( boarderLeft );
+	sf::RectangleShape		boarderTop( sf::Vector2f( this->maxWidth, this->_size ) );
+	boarderTop.setFillColor( sf::Color::Black );
+	boarderTop.setPosition( 0, 0 );
+	this->_win->draw( boarderTop );
+	sf::RectangleShape		boarderRight( sf::Vector2f( this->_size, this->maxHeight ) );
+	boarderRight.setFillColor( sf::Color::Black );
+	boarderRight.setPosition( this->maxWidth - this->_size, 0 );
+	this->_win->draw( boarderRight );
+	sf::RectangleShape		boarderBottom( sf::Vector2f( this->maxWidth, this->_size * 3 ) );
+	boarderBottom.setFillColor( sf::Color::Black );
+	boarderBottom.setPosition( 0, this->maxHeight - (this->_size * 3) );
+	this->_win->draw( boarderBottom );
 
-	std::string		score = "Score ";
+	// render score
+	sf::Text	text;
+	std::string	score = "Score ";
+
 	score += std::to_string( snake.score );
-	drawMessage( score.c_str(), 20, this->maxHeight - 32, 255, 255, 255 );
+	text.setFont( this->_font );
+	text.setString( score );
+	text.setCharacterSize(36);
+	text.setFillColor( sf::Color::White );
+	text.setPosition( this->_size, this->maxHeight - (this->_size * 3) );
+	this->_win->draw( text );
 
-	SDL_SetRenderDrawColor( this->_ren, 255, 255, 255, 255 );
-	SDL_RenderPresent( this->_ren );
+	this->_win->display();
 }
 
-void	Graphics::clean( void ) {
-	TTF_Quit();
-	SDL_DestroyWindow( this->_win );
-	SDL_DestroyRenderer( this->_ren );
-	SDL_Quit();
-	std::cout << "Game cleaned" << std::endl;
-}
-
-bool	Graphics::running( void ) {
+bool	SFML::running( void ) {
 	return this->_isRunning;
 }
 
-void	Graphics::drawRect( int x, int y ) {
-	rect.x = x;
-	rect.y = y;
-	rect.w = this->size;
-	rect.h = this->size;
-}
-
-void	Graphics::drawMessage( const char* msg, int x, int y, int r, int g, int b ) {
-	SDL_Color		color;
-	SDL_Rect		rect;
-	color.r = r;
-	color.g = g;
-	color.b = b;
-	color.a = 255;
-	this->_surface = TTF_RenderText_Solid( this->_font, msg, color );
-	this->_texture = SDL_CreateTextureFromSurface( this->_ren, this->_surface );
-	rect.x = x;
-	rect.y = y;
-	rect.w = this->_surface->w;
-	rect.h = this->_surface->h;
-	SDL_FreeSurface( this->_surface );
-	SDL_RenderCopy( this->_ren, this->_texture, NULL, &rect );
-	SDL_DestroyTexture( this->_texture );
+void	SFML::clean( void ) {
+	this->_win->close();
 }

@@ -11,7 +11,7 @@
 #include "../IGraphics.hpp"
 #include "../Snake.hpp"
 
-class Graphics : public IGraphics{
+class SDL : public IGraphics{
 	private:
 		SDL_Window*		_win;
 		SDL_Renderer*	_ren;
@@ -19,22 +19,20 @@ class Graphics : public IGraphics{
 		SDL_Texture*	_texture;
 		TTF_Font*		_font;
 		bool			_isRunning;
+		int				_size;
 
 	public:
 		SDL_Rect		rect;
-		int				size;
 		int				maxWidth;
 		int				maxHeight;
 
-		Graphics( void );
-		// Graphics( std::string lib );
-		// Graphics( const Graphics& copy );
-		// Graphics&	operator=( const Graphics& rhs );
-		~Graphics( void );
-
-		void	init( std::string title, int xpos, int ypos, int width, int height, bool fullscreen );
+		SDL( void );
+		SDL( const SDL& copy );
+		SDL&	operator=( const SDL& rhs );
+		~SDL( void );
+		
+		void	init( int width, int height, int size );
 		char	handleInput( void );
-		void	update( void );
 		void	render( Snake& snake );
 		void	clean( void );
 

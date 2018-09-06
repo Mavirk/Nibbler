@@ -17,14 +17,17 @@ Snake::Snake( void ) {
 Snake::Snake( int maxX, int maxY, int size ) : _length( 5 ), _direction( 'l' ), _size( size ) {
 	this->maxX = maxX - this->_size;
 	this->maxY = maxY - (this->_size * 3);
-	this->_xPos = (((this->maxX / 10) / 2) * 10) - (this->_length * 10);
-	this->_yPos = (((this->maxY / 10) / 2) * 10);
+	this->xPos = (((this->maxX / this->_size) / 2) * this->_size) - (this->_length * this->_size);
+	this->yPos = (((this->maxY / this->_size) / 2) * this->_size);
 	this->eat = false;
 	this->score = 0;
+	this->delay = 160000;
 
 	for ( int i = 0; i < this->_length; i++ ) {
-		snake.push_back( snakePart( this->_xPos + (i * 10), this->_yPos ) );
+		snake.push_back( snakePart( this->xPos + (i * 10), this->yPos ) );
 	}
+
+	std::cout << "Snake made" << std::endl;
 }
 
 Snake::~Snake( void ) {
@@ -32,6 +35,25 @@ Snake::~Snake( void ) {
 }
 
 void	Snake::moveSnake( char input ) {
+	// get input... update direction
+	if ( ( this->_direction == 'l' || this->_direction == 'r' ) && input != '\0' ) {
+		if ( input == 'd' ) {
+			// move down
+			this->_direction = 'd';
+		} else if ( input == 'u' ) {
+			// move up
+			this->_direction = 'u';
+		}
+	} else if ( ( this->_direction == 'u' || this->_direction == 'd') && input != '\0' ) {
+		if ( input == 'l' ) {
+			// move left
+			this->_direction = 'l';
+		} else if ( input == 'r' ) {
+			// move right
+			this->_direction = 'r';
+		}
+	}
+
 	// moves the snake
 	if ( this->_direction == 'l' ) {
 		// move left
@@ -51,30 +73,11 @@ void	Snake::moveSnake( char input ) {
 	if ( !this->eat ) {
 		snake.pop_back();
 	}
-
-	// get input... update direction
-	if ( ( this->_direction == 'l' || this->_direction == 'r' ) && input != '\0' ) {
-		if ( input == 'd' ) {
-			// move down
-			this->_direction = 'd';
-		} else if ( input == 'u' ) {
-			// move up
-			this->_direction = 'u';
-		}
-	} else if ( ( this->_direction == 'u' || this->_direction == 'd') && input != '\0' ) {
-		if ( input == 'l' ) {
-			// move left
-			this->_direction = 'l';
-		} else if ( input == 'r' ) {
-			// move right
-			this->_direction = 'r';
-		}
-	}
 }
 
 bool	Snake::collision( void ) {
 	// check snake collision with the max window
-	if ( snake[0].x <= this->_size || snake[0].y <= this->_size || snake[0].x == this->maxX || snake[0].y == this->maxY ) {
+	if ( snake[0].x < this->_size || snake[0].y < this->_size || snake[0].x == this->maxX || snake[0].y == this->maxY ) {
 		return true;
 	}
 
@@ -90,6 +93,10 @@ bool	Snake::collision( void ) {
 		this->eat = true;
 		this->score += 10;
 		this->makeFood();
+		if ( this->score % 100 == 0 ) {
+			this->delay -= 20000;
+			std::cout << "The delay is " << this->delay << std::endl;
+		}
 	} else {
 		this->eat = false;
 	}
@@ -100,8 +107,8 @@ bool	Snake::collision( void ) {
 void	Snake::makeFood( void ) {
 	bool	make = false;
 	while ( !make ) {
-		int		tempX = rand() % ( this->maxX/10 ) * 10;
-		int		tempY = rand() % ( this->maxY/10 ) * 10;
+		int		tempX = rand() % ( this->maxX/this->_size ) * this->_size;
+		int		tempY = rand() % ( this->maxY/this->_size ) * this->_size;
 		for ( unsigned int i = 0; i < snake.size(); i++ ){
 			if ( snake[i].x == tempX && snake[i].y == tempY )
 				continue ;
@@ -119,11 +126,11 @@ int		Snake::getLength( void ) const {
 }
 
 int		Snake::getX( void ) const {
-	return this->_xPos;
+	return this->xPos;
 }
 
 int		Snake::getY( void ) const {
-	return this->_yPos;
+	return this->yPos;
 }
 
 std::vector<snakePart>	Snake::getSnake( void ) const {

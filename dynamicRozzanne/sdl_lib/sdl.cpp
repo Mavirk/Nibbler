@@ -1,14 +1,14 @@
 #include "sdl.hpp"
 
-extern "C" Graphics* create_object(){
-  return new Graphics;
+extern "C" SDL* create_object(){
+  return new SDL;
 }
 
-extern "C" void destroy_object( Graphics* object ){
+extern "C" void destroy_object( SDL* object ){
 	delete object;
 }
 
-Graphics::Graphics( void ) : size( 10 ) {
+SDL::SDL( void ) : _size( 10 ) {
 	this->_win = NULL;
 	this->_ren = NULL;
 	this->_isRunning = true;
@@ -18,31 +18,38 @@ Graphics::Graphics( void ) : size( 10 ) {
 	return ;
 }
 
-// Graphics::Graphics( const Graphics& copy ) {
+SDL::SDL( const SDL& copy ) {
+	*this = copy;
+}
 
-// }
+SDL&	SDL::operator=( const SDL& rhs ) {
+	this->_win = rhs._win;
+	this->_ren = rhs._ren;
+	this->_surface = rhs._surface;
+	this->_texture = rhs._texture;
+	this->_font = rhs._font;
+	this->_isRunning = rhs._isRunning;
+	this->_size = rhs._size;
+	this->rect = rhs.rect;
+	this->maxWidth = rhs.maxWidth;
+	this->maxHeight = rhs.maxHeight;
 
-// Graphics&	Graphics::operator=( const Graphics& rhs ) {
+	return *this;
+}
 
-// }
-
-Graphics::~Graphics( void ) {
-	clean();
+SDL::~SDL( void ) {
 	return ;
 }
 
-void	Graphics::init( std::string title, int xpos, int ypos, int width, int height, bool fullscreen ) {
-	int		flags = 0;
-	if ( fullscreen )
-		flags = SDL_WINDOW_FULLSCREEN;
-
+void	SDL::init( int width, int height, int size ) {
 	if ( SDL_Init(SDL_INIT_EVERYTHING) == 0 ) {
 		std::cout << "Subsystems init" << std::endl;
 
-		this->_win = SDL_CreateWindow( title.c_str(), xpos, ypos, width, height, flags );
+		this->_win = SDL_CreateWindow( "Snake Game SDL", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, 0 );
 		if ( this->_win ) {
 			this->maxWidth = width;
 			this->maxHeight = height;
+			this->_size = size;
 			std::cout << "Window created" << std::endl;
 		}
 
@@ -64,14 +71,11 @@ void	Graphics::init( std::string title, int xpos, int ypos, int width, int heigh
 	}
 
 	this->_font = TTF_OpenFont( "OpenSans-ExtraBold.ttf", 18 );
-	if ( this->_font == NULL ){
+	if ( this->_font == NULL )
 		this->_isRunning = false;
-		// std::cout << "asdasdasd";
-	}
-	// std::cout << _isRunning << std::endl;
 }
 
-char	Graphics::handleInput( void ) {
+char	SDL::handleInput( void ) {
 	SDL_Event		event;
 	SDL_PollEvent(&event);
 	char			input = '\0';
@@ -99,41 +103,46 @@ char	Graphics::handleInput( void ) {
 			case SDLK_2:
 				input = '2';
 				break ;
+			case SDLK_3:
+				input = '3';
+				break ;
+			case SDLK_ESCAPE:
+				this->_isRunning = false;
+				break ;
 			default:
 				break ;
 		}
 	}
-
 	return input;
 }
 
-void	Graphics::update( void ) {
-	return ;
-}
-
-void	Graphics::render( Snake& snake ) {
+void	SDL::render( Snake& snake ) {
 	// this is where we would add stuff to render
 	SDL_RenderClear( this->_ren );
 
 	// render the boarder etc
 	SDL_SetRenderDrawColor( this->_ren, 0, 0, 0, 255 );
 	// top boarder
-	SDL_Rect	boarderTop = { 0, 0, this->maxWidth, 10 };
+	SDL_Rect	boarderTop = { 0, 0, this->maxWidth, this->_size };
 	SDL_RenderFillRect( this->_ren, &boarderTop );
 	// left boarder
-	SDL_Rect	boarderLeft = { 0, 0, 10, this->maxHeight };
+	SDL_Rect	boarderLeft = { 0, 0, this->_size, this->maxHeight };
 	SDL_RenderFillRect( this->_ren, &boarderLeft );
 	// right boarder
-	SDL_Rect	boarderRight = { this->maxWidth - 10, 0, 10, this->maxHeight };
+	SDL_Rect	boarderRight = { this->maxWidth - this->_size, 0, this->_size, this->maxHeight };
 	SDL_RenderFillRect( this->_ren, &boarderRight );
 	// bottom boarder
-	SDL_Rect	boarderBottom = { 0, this->maxHeight - 30, this->maxWidth, 30 };
+	SDL_Rect	boarderBottom = { 0, this->maxHeight - (this->_size * 3), this->maxWidth, (this->_size * 3) };
 	SDL_RenderFillRect( this->_ren, &boarderBottom );
 
 	// process the snake
 	std::vector<snakePart>	snakeTemp = snake.getSnake();
-	SDL_SetRenderDrawColor( this->_ren, 255, 0, 255, 255 );
+	SDL_SetRenderDrawColor( this->_ren, 0, 0, 255, 255 );
 	for ( unsigned long i = 0; i < snakeTemp.size(); i++ ){
+		if (i == 0)
+			SDL_SetRenderDrawColor( this->_ren, 255, 255, 255, 255 );
+		else
+			SDL_SetRenderDrawColor( this->_ren, 0, 0, 255, 255 );
 		drawRect( snakeTemp[i].x, snakeTemp[i].y );
 		SDL_RenderFillRect( this->_ren, &rect );
 	}
@@ -151,7 +160,7 @@ void	Graphics::render( Snake& snake ) {
 	SDL_RenderPresent( this->_ren );
 }
 
-void	Graphics::clean( void ) {
+void	SDL::clean( void ) {
 	TTF_Quit();
 	SDL_DestroyWindow( this->_win );
 	SDL_DestroyRenderer( this->_ren );
@@ -159,18 +168,18 @@ void	Graphics::clean( void ) {
 	std::cout << "Game cleaned" << std::endl;
 }
 
-bool	Graphics::running( void ) {
+bool	SDL::running( void ) {
 	return this->_isRunning;
 }
 
-void	Graphics::drawRect( int x, int y ) {
+void	SDL::drawRect( int x, int y ) {
 	rect.x = x;
 	rect.y = y;
-	rect.w = this->size;
-	rect.h = this->size;
+	rect.w = this->_size;
+	rect.h = this->_size;
 }
 
-void	Graphics::drawMessage( const char* msg, int x, int y, int r, int g, int b ) {
+void	SDL::drawMessage( const char* msg, int x, int y, int r, int g, int b ) {
 	SDL_Color		color;
 	SDL_Rect		rect;
 	color.r = r;
@@ -187,3 +196,4 @@ void	Graphics::drawMessage( const char* msg, int x, int y, int r, int g, int b )
 	SDL_RenderCopy( this->_ren, this->_texture, NULL, &rect );
 	SDL_DestroyTexture( this->_texture );
 }
+

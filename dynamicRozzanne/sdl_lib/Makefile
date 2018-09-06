@@ -11,7 +11,7 @@ LIB			=	-L ~/.brew/lib -lSDL2 -lSDL2_ttf
 all: $(NAME)
 
 $(NAME):
-	$(CPP) $(CPPFLAGS) $(LDFLAGS) $(SRC) ../snake.cpp ../IGraphics.cpp $(INCLUDE) $(LIB) -o $(NAME) 
+	$(CPP) $(CPPFLAGS) $(LDFLAGS) $(SRC) ../Snake.cpp ../IGraphics.cpp $(INCLUDE) $(LIB) -o $(NAME) 
 
 re: fclean all
 

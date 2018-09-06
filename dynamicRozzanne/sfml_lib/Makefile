@@ -6,12 +6,12 @@ CPP			=	g++ -std=c++11
 CPPFLAGS	=	-Wall -Wextra -Werror 
 LDFLAGS		=	-dynamiclib -flat_namespace
 INCLUDE		= 	-I ~/.brew/include
-LIB			=	-L ~/.brew/lib -lSDL2 -lSDL2_ttf
+LIB			=	-L ~/.brew/lib -lsfml-system -lsfml-window -lsfml-graphics
 
 all: $(NAME)
 
 $(NAME):
-	$(CPP) $(CPPFLAGS) $(LDFLAGS) $(SRC) ../snake.cpp ../IGraphics.cpp $(INCLUDE) $(LIB) -o $(NAME) 
+	$(CPP) $(CPPFLAGS) $(LDFLAGS) $(SRC) ../Snake.cpp ../IGraphics.cpp $(INCLUDE) $(LIB) -o $(NAME) 
 
 re: fclean all
 

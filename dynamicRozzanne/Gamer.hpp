@@ -21,7 +21,6 @@ class Game {
 
 	public:
 		void* handle;
-		IGraphics* oldlib;
 		IGraphics* lib;
 		IGraphics* (*create)();
 		void (*destroy)(IGraphics*);
@@ -29,16 +28,15 @@ class Game {
 		int			delay;
 
 		Game( void );
-		Game(char** argv, int width, int height, int size );
+		Game(std::string l, int width, int height, int size );
 		//Game( std::string gfx, int width, int height );
 		~Game( void );
 
 		void	run();
-		void 	loadLib(int i);
+		bool 	loadLib(int i);
 		
-		void	init( std::string title, int xpos, int ypos, int width, int height, bool fullscreen );
+		void	init(  int width, int height );
 		void	handleEvents( void );
-		void	update( void );
 		void	render( void );
 		void	clean( void );
 

@@ -1,46 +1,35 @@
-#ifndef GRAPHICS_HPP
-#define GRAPHICS_HPP
+#ifndef SFML_HPP
+#define SFML_HPP
 #endif
 
 #pragma once
 
 #include <iostream>
-#include <unistd.h>
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_ttf.h>
-#include "../IGraphics.hpp"
 #include "../Snake.hpp"
+#include "../IGraphics.hpp"
 
-class Graphics : public IGraphics{
+#include <SFML/Window.hpp>
+#include <SFML/Graphics.hpp>
+
+class SFML : public IGraphics{
 	private:
-		SDL_Window*		_win;
-		SDL_Renderer*	_ren;
-		SDL_Surface*	_surface;
-		SDL_Texture*	_texture;
-		TTF_Font*		_font;
+		sf::RenderWindow*	_win;
+		sf::Font			_font;
 		bool			_isRunning;
+		int				_size;
 
 	public:
-		SDL_Rect		rect;
-		int				size;
 		int				maxWidth;
 		int				maxHeight;
 
-		Graphics( void );
-		// Graphics( std::string lib );
-		// Graphics( const Graphics& copy );
-		// Graphics&	operator=( const Graphics& rhs );
-		~Graphics( void );
+		SFML( void );
+		SFML( const SFML& copy );
+		SFML&	operator=( const SFML& rhs );
+		~SFML( void );
 
-		void	init( std::string title, int xpos, int ypos, int width, int height, bool fullscreen );
+		void	init( int width, int height, int size );
+		bool	running( void );
 		char	handleInput( void );
-		void	update( void );
 		void	render( Snake& snake );
 		void	clean( void );
-
-		void	drawRect( int x, int y );
-		void	drawMessage( const char* msg, int x, int y, int r, int g, int b );
-		bool	running( void );
 };
-
-// makes the graphics based on SDL

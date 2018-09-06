@@ -2,12 +2,12 @@
 
 Game::Game( void ) {}
 
-Game::Game(char** argv, int width, int height, int size ) : _size( size ) {
+Game::Game(std::string l, int width, int height, int size ) : _size( size ) {
     _width = width;
     _height = height;
-	if (static_cast<std::string>(argv[1]) == "1")
+	if (l == "1")
         handle = dlopen("sdl.so", RTLD_LAZY);
-    else if (static_cast<std::string>(argv[1]) == "2")
+    else if (l == "2")
         handle = dlopen("sfml.so", RTLD_LAZY );
     if (!handle){
         std::cout << "bad handle" << std::endl;
@@ -32,16 +32,15 @@ Game::~Game( void ) {
 
 void
 Game::run(){
-	init( "Snake Game", _width / 2, _height / 2, _width, _height, false );
+	init(  _width , _height );
 	while ( running() ) {
 		handleEvents();
-		update();
 		render();
 	}
 	clean();
 }
 
-void
+bool
 Game::loadLib(int i){
     const char* filename;
     switch (i) {
@@ -56,14 +55,15 @@ Game::loadLib(int i){
     }
     handle = dlopen(filename, RTLD_LAZY);
     if (!handle){
-        std::cout << "bad handle" << std::endl;
-        return;
+        std::cout << "bd handle" << std::endl;
+        return false;
     }else if ((create = reinterpret_cast<IGraphics* (*)()>(dlsym(handle, "create_object"))) == NULL){ 
         std::cerr << "create_object : "<< dlerror() << std::endl;
-        return ;
+        return false;
     }
     destroy = (void (*)(IGraphics*))dlsym(handle, "destroy_object");
     lib = create();
+    return true;
 }
 
 void	Game::handleEvents( void ) {
@@ -74,12 +74,12 @@ void	Game::handleEvents( void ) {
         case '1':
             clean();
             loadLib(1);
-            init( "sdl", _width, _height, _width, _height, false );
+            init( _width, _height);
             break;
         case '2':
             clean();
             loadLib(2);
-            init( "sfml", _width, _height, _width, _height, false );
+            init( _width, _height );
             break;
         default:
             break;
@@ -87,15 +87,8 @@ void	Game::handleEvents( void ) {
 	this->_snake.moveSnake( this->input );
 }
 
-void	Game::init( std::string title, int xpos, int ypos, int width, int height, bool fullscreen ) {
-	lib->init( title, xpos, ypos, width, height, fullscreen );
-}
-
-void	Game::update( void ) {
-	lib->update();
-	if ( (this->_snake.score % 100) == 0 ) {
-		this->delay -= 1000;
-	}
+void	Game::init( int height, int width) {
+	lib->init( width, height, this->_size);
 }
 
 void	Game::render( void ) {
