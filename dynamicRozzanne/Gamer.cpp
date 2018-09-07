@@ -5,10 +5,16 @@ Game::Game( void ) {}
 Game::Game(std::string l, int width, int height, int size ) : _size( size ) {
     _width = width;
     _height = height;
-	if (l == "1")
+	if (l == "1"){
         handle = dlopen("sdl.so", RTLD_LAZY);
-    else if (l == "2")
+        std::cout << l << std::endl;
+    }else if (l == "2"){
         handle = dlopen("sfml.so", RTLD_LAZY );
+        std::cout << l << std::endl;
+    }else if (l == "3"){
+        handle = dlopen("alg.so", RTLD_LAZY );
+        std::cout << l << std::endl;
+    }
     if (!handle){
         std::cout << "bad handle" << std::endl;
         return ;
@@ -51,6 +57,10 @@ Game::loadLib(int i){
         case 2 :
             dlclose(handle);
             filename = "sfml.so";
+            break;
+        case 3 :
+            dlclose(handle);
+            filename = "alg.so";
             break;
     }
     handle = dlopen(filename, RTLD_LAZY);

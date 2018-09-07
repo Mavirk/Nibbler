@@ -15,13 +15,16 @@ SRC = 	main.cpp Gamer.cpp Snake.cpp
 
 all: $(NAME)
 
-$(NAME): sfml sdl2 
+$(NAME): sfml sdl2 alg
+	@cp allegro_lib/alg.so ./
 	@cp sdl_lib/sdl.so ./
 	@cp sfml_lib/sfml.so ./
 	@$(CXX) $(CFLAGS) $(SRC) -o $(NAME)
 
-sdl2:
-	
+alg:
+	@make -C allegro_lib
+
+sdl2:	
 	@make -C sdl_lib
 
 sfml:
@@ -33,6 +36,7 @@ sfml:
 clean:
 	@make -C sdl_lib clean
 	@make -C sfml_lib clean
+	@make -C allegro_lib clean
 	@rm -rf $(OBJ)
 
 fclean: clean
@@ -40,5 +44,6 @@ fclean: clean
 	@rm -rf $(NAME)
 	@make -C sdl_lib fclean
 	@make -C sfml_lib fclean
+	@make -C allegro_lib fclean
 
 re: fclean all

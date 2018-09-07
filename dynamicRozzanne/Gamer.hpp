@@ -20,10 +20,10 @@ class Game {
 		int			_height;
 
 	public:
-		void* handle;
-		IGraphics* lib;
-		IGraphics* (*create)();
-		void (*destroy)(IGraphics*);
+		void* 		handle;
+		IGraphics* 	lib;
+		IGraphics* 	(*create)();
+		void 		(*destroy)(IGraphics*);
 		char		input;
 		int			delay;
 
