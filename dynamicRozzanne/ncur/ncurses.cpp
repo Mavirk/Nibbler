@@ -31,6 +31,7 @@ Ncurses&	Ncurses::operator=( const Ncurses& rhs ) {
 }
 
 Ncurses::~Ncurses( void ) {
+	clear();
 	refresh();
 	endwin();
 	return ;
@@ -55,7 +56,7 @@ bool	Ncurses::init( int width, int height, int size ) {
 }
 
 char	Ncurses::handleInput( void ) {
-		switch (getch()) {
+		switch (wgetch(_win)) {
 			case KEY_RIGHT:
 				_input = 'r';
 				break ;
@@ -92,16 +93,15 @@ void	Ncurses::render( Snake& snake ) {
 	char f = '*';
 	char b = '#';
 	// this is where we would add stuff to render
-
 	start_color();
 	init_pair(FOOD_PAIR, COLOR_GREEN, COLOR_GREEN);
-	init_pair(SCORE_PAIR, COLOR_CYAN, COLOR_BLACK);
+	init_pair(SCORE_PAIR, COLOR_WHITE, COLOR_BLACK);
 	init_pair(MOUNTAIN_PAIR, COLOR_WHITE, COLOR_WHITE);
-	init_pair(SNAKE_PAIR, COLOR_MAGENTA, COLOR_MAGENTA);
+	init_pair(SNAKE_PAIR, COLOR_RED, COLOR_RED);
+	init_pair(HEAD_PAIR, COLOR_MAGENTA, COLOR_MAGENTA);
 
 	wattron(_win, COLOR_PAIR(MOUNTAIN_PAIR));
 	for ( int i = 0; i < _width; i++ ) {
-		
 		move( 0, i );
 		addch( b );
 	}
@@ -120,12 +120,20 @@ void	Ncurses::render( Snake& snake ) {
 	attroff(COLOR_PAIR(MOUNTAIN_PAIR));
 
 	// process the snake
-	wattron(_win, COLOR_PAIR(SNAKE_PAIR));
 	std::vector<snakePart>	snakeTemp = snake.getSnake();
 	for ( unsigned long i = 0; i < snakeTemp.size(); i++ ){
-		mvwaddch(_win, snakeTemp[i].y/10, snakeTemp[i].x/10, s);
+		if ( i == 0 ) {
+			wattron(_win, COLOR_PAIR(HEAD_PAIR));
+			mvwaddch(_win, snakeTemp[i].y/10, snakeTemp[i].x/10, s);
+			attroff(COLOR_PAIR(HEAD_PAIR));
+		} else {
+			wattron(_win, COLOR_PAIR(SNAKE_PAIR));
+			mvwaddch(_win, snakeTemp[i].y/10, snakeTemp[i].x/10, s);
+			attroff(COLOR_PAIR(SNAKE_PAIR));
+		}
+		
 	}
-	attroff(COLOR_PAIR(SNAKE_PAIR));
+	
 
 	// print score to window
 	wattron(_win, COLOR_PAIR(SCORE_PAIR));
@@ -145,6 +153,9 @@ void	Ncurses::render( Snake& snake ) {
 }
 
 void	Ncurses::clean( void ) {
+	clear();
+	refresh();
+	endwin();
 	std::cout << "Game cleaned" << std::endl;
 }
 

@@ -7,6 +7,7 @@
 #define SCORE_PAIR     2
 #define MOUNTAIN_PAIR  3
 #define SNAKE_PAIR    4
+#define HEAD_PAIR    5
 
 class Ncurses : public IGraphics{
 	private:
