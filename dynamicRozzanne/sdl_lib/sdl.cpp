@@ -1,6 +1,6 @@
 #include "sdl.hpp"
 
-extern "C" SDL* create_object(){
+extern "C" IGraphics* create_object(){
 	std::cout << "Lib SDL Object created" << std::endl;
 	return new SDL;
 }

@@ -1,6 +1,6 @@
 #include "Allegro.hpp"
 
-extern "C" Allegro* create_object(){
+extern "C" IGraphics* create_object(){
 	std::cout << "Lib Allegro Object created" << std::endl;
 	return new Allegro;
 }

@@ -12,12 +12,12 @@ Game::Game( std::string libInput, int width, int height, int size ) : _size( siz
         handle = dlopen( "sfml.so", RTLD_LAZY );
         std::cout << "Library made is #" << libInput << std::endl;
     } else if (libInput == "3" ){
-        handle = dlopen( "alg.so", RTLD_LAZY );
+        handle = dlopen( "ncur.so", RTLD_LAZY );
         std::cout << "Library made is #" << libInput << std::endl;
     }
 
     if (!handle){
-        std::cerr << "Error: Bad handle." << std::endl;
+        std::cerr << "Error: Bad handle." << dlerror() << std::endl;
         return ;
     }
     /* on Linux, use "./myclass.so" */
@@ -60,7 +60,7 @@ bool    Game::loadLib(int i){
             break;
         case 3 :
             dlclose(handle);
-            filename = "alg.so";
+            filename = "ncur.so";
             break;
     }
     handle = dlopen(filename, RTLD_LAZY);
@@ -80,7 +80,7 @@ bool    Game::loadLib(int i){
 void	Game::handleEvents( void ) {
 	usleep( this->_snake.delay );
 	this->input = lib->handleInput();
-    std::cout << "input " << input << std::endl;
+    // std::cout << "input " << input << std::endl;
     switch(input){
         case '1':
             clean();

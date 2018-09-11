@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include "Game.hpp"
+// #include <allegro5/allegro.h>
 
 Game*	game = nullptr;
 
