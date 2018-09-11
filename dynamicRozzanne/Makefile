@@ -2,8 +2,6 @@ NAME=				nibbler
 
 RM=					rm -f
 
-#LIBRARIES_NIBBLER=	-ldl -export-dynamic
-
 INCLUDES=			-I ~/.brew/include
 
 CPPFLAGS=			-Wall -Wextra -Werror $(LIBRARIES_NIBBLER) -g

@@ -31,6 +31,7 @@ Ncurses&	Ncurses::operator=( const Ncurses& rhs ) {
 }
 
 Ncurses::~Ncurses( void ) {
+	refresh();
 	endwin();
 	return ;
 }
@@ -40,10 +41,16 @@ bool	Ncurses::init( int width, int height, int size ) {
 	_width = width / size;
 	_height = height / size;
 	_win = initscr();
+	if (has_colors() == FALSE) {
+		endwin();
+		printf("Your terminal does not support color\n");
+		return false;
+	}
     nodelay(stdscr, true);
     keypad(stdscr, true);
     noecho();
     curs_set(0);
+
 	return true;
 }
 
@@ -70,7 +77,7 @@ char	Ncurses::handleInput( void ) {
 			case '3':
 				_input = '3';
 				break ;
-			case KEY_EXIT:
+			case 27:
 				this->_isRunning = false;
 				break ;
 			default:
@@ -86,26 +93,15 @@ void	Ncurses::render( Snake& snake ) {
 	char b = '#';
 	// this is where we would add stuff to render
 
-	// render the boarder etc
-	// top boarder
-	// for ( int i = 0; i < _width; i++ ) {
-	// 	mvwaddch(_win, 0, i, b);
-	// }
+	start_color();
+	init_pair(FOOD_PAIR, COLOR_GREEN, COLOR_GREEN);
+	init_pair(SCORE_PAIR, COLOR_CYAN, COLOR_BLACK);
+	init_pair(MOUNTAIN_PAIR, COLOR_WHITE, COLOR_WHITE);
+	init_pair(SNAKE_PAIR, COLOR_MAGENTA, COLOR_MAGENTA);
 
-	// // left boarder
-	// for ( int i = 0; i < _height - 3; i++ ) {
-	// 	mvwaddch(_win, i, 0, b);
-	// }
-	// // bottom boarder
-	// for ( int i = 0; i < _height; i++ ) {
-	// 	mvwaddch(_win, _width, i, b);
-	// }
-	// // right boarder
-	// for ( int i = 0; i < _width; i++ ) {
-	// 	mvwaddch(_win, i, _height, b);
-	// }
-
+	wattron(_win, COLOR_PAIR(MOUNTAIN_PAIR));
 	for ( int i = 0; i < _width; i++ ) {
+		
 		move( 0, i );
 		addch( b );
 	}
@@ -120,21 +116,30 @@ void	Ncurses::render( Snake& snake ) {
 	for ( int i = 0; i < _height; i++ ) {
 		move( i, _width );
 		addch( b );
-	} 
+	}
+	attroff(COLOR_PAIR(MOUNTAIN_PAIR));
 
 	// process the snake
+	wattron(_win, COLOR_PAIR(SNAKE_PAIR));
 	std::vector<snakePart>	snakeTemp = snake.getSnake();
 	for ( unsigned long i = 0; i < snakeTemp.size(); i++ ){
 		mvwaddch(_win, snakeTemp[i].y/10, snakeTemp[i].x/10, s);
 	}
+	attroff(COLOR_PAIR(SNAKE_PAIR));
+
+	// print score to window
+	wattron(_win, COLOR_PAIR(SCORE_PAIR));
+	move( _height - 1, 2 );
+	printw( "Score " );
+	move( _height - 1, 8 );
+	printw( std::to_string(snake.score).c_str() );
+	wattron(_win, COLOR_PAIR(SCORE_PAIR));
 
 	// print food to window
-	move( _height - 1, 1 );
-	printw( std::to_string(snake.food.x/10).c_str() );
-	move( _height - 1, 6 );
-	printw( std::to_string(snake.food.y/10).c_str() );
+	wattron(_win, COLOR_PAIR(FOOD_PAIR));
 	move( snake.food.y/10, snake.food.x/10 );
 	addch( f );
+	wattron(_win, COLOR_PAIR(FOOD_PAIR));
 	refresh();
 	return;
 }
