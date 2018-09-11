@@ -1,53 +1,53 @@
-NAME = nibbler
+NAME=				nibbler
 
-CPP			=	clang++ -std=c++11 -stdlib=libc++
-CFLAGS		=	-Wall -Werror -Wextra 
+RM=					rm -f
 
-LIB_FLAG	=	-dynamiclib -flat_namespace
+#LIBRARIES_NIBBLER=	-ldl -export-dynamic
 
-SRC			=	main.cpp \
-				Game.cpp \
-				Snake.cpp
-# ALLINC		= 	-I ~/.brew/include -L ~/.brew/lib -lallegro -lallegro_main
-#OBJ = $(SRC:.cpp=.o)
+INCLUDES=			-I ~/.brew/include
 
-#%.o: %.cpp 
-	#@$(CXX) $(CFLAGS) $(SRC) -c $< -o $@
+CPPFLAGS=			-Wall -Wextra -Werror $(LIBRARIES_NIBBLER) -g
 
-all: $(NAME)
+SRC=				main.cpp \
+					Game.cpp \
+					Snake.cpp
 
-$(NAME): dynamic
-	$(CPP) $(CFLAGS) $(SRC)  -o $(NAME)
 
-dynamic: sfml sdl2 ncur
-	@cp sfml_lib/sfml.so ./
-	@cp sdl_lib/sdl.so ./
-	@cp ncur/ncur.so ./
+OBJ=				$(SRC:.cpp=.o)
 
-alg:
-	@make -C allegro_lib
+LIBRARY_SFML=		sfml.so
 
-ncur:
-	@make -C ncur
+LIBRARY_SDL=		sdl.so
 
-sdl2:	
-	@make -C sdl_lib
+LIBRARY_NCURSES=	ncur.so
 
-sfml:
-	@make -C sfml_lib
+SFML_SRC=			sfml_lib/SFML.cpp \
+					Snake.cpp
+
+NCURSES_SRC=		ncur/ncurses.cpp \
+					Snake.cpp
+
+SDL_SRC=			sdl_lib/SDL.cpp \
+					Snake.cpp
+
+all:				$(LIBRARY_SFML) $(LIBRARY_SDL) $(LIBRARY_NCURSES) $(NAME)
+
+$(LIBRARY_SFML):
+					g++ -o $(LIBRARY_SFML) $(SFML_SRC) -shared -fPIC -L ~/.brew/lib -lsfml-system -lsfml-window -lsfml-graphics $(CPPFLAGS) $(INCLUDES)
+
+$(LIBRARY_SDL):
+					g++ -o $(LIBRARY_SDL) $(SDL_SRC) -L ~/.brew/lib -lSDL2 -lSDL2_ttf -shared -fPIC -Wall -Wextra -Werror $(INCLUDES)
+
+$(LIBRARY_NCURSES):
+					g++ -o $(LIBRARY_NCURSES) $(NCURSES_SRC) -shared -fPIC -lncurses -Wall -Wextra -Werror $(INCLUDES)
+
+$(NAME):			$(OBJ)
+					g++ -o $(NAME) $(OBJ) $(CPPFLAGS)
 
 clean:
-	@make -C sdl_lib clean
-	@make -C sfml_lib clean
-	@make -C ncur clean
-	@rm -rf $(OBJ)
+					$(RM) $(OBJ) $(SFML_OBJ) $(SDL_OBJ) $(NCURSES_OBJ)
 
-fclean: clean
-	# @rm *.so
-	@rm -rf $(NAME)
-	@make -C sdl_lib fclean
-	@make -C sfml_lib fclean
-	@make -C ncur fclean
-	# @make -C allegro_lib fclean
+fclean:				clean
+					$(RM) $(NAME) $(LIBRARY_NCURSES) $(LIBRARY_SDL) $(LIBRARY_SFML)
 
-re: fclean all
+re:					clean fclean all
