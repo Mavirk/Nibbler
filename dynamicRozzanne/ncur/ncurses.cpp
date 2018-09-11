@@ -88,22 +88,39 @@ void	Ncurses::render( Snake& snake ) {
 
 	// render the boarder etc
 	// top boarder
-	for ( int i = 0; i < _width; i++ ) {
-		mvwaddch(_win, 0, i, b);
-	}
+	// for ( int i = 0; i < _width; i++ ) {
+	// 	mvwaddch(_win, 0, i, b);
+	// }
 
-	// left boarder
-	for ( int i = 0; i < _height; i++ ) {
-		mvwaddch(_win, i, 0, b);
-	}
-	// right boarder
-	for ( int i = 0; i < _height; i++ ) {
-		mvwaddch(_win, _width, i, b);
-	}
-	// bottom boarder
+	// // left boarder
+	// for ( int i = 0; i < _height - 3; i++ ) {
+	// 	mvwaddch(_win, i, 0, b);
+	// }
+	// // bottom boarder
+	// for ( int i = 0; i < _height; i++ ) {
+	// 	mvwaddch(_win, _width, i, b);
+	// }
+	// // right boarder
+	// for ( int i = 0; i < _width; i++ ) {
+	// 	mvwaddch(_win, i, _height, b);
+	// }
+
 	for ( int i = 0; i < _width; i++ ) {
-		mvwaddch(_win, i, _height, b);
+		move( 0, i );
+		addch( b );
 	}
+	for ( int i = 0; i < _height; i++ ) {
+		move( i, 0 );
+		addch( b );
+	}
+	for ( int i = 0; i < _width; i++ ) {
+		move( (_height - 3), i );
+		addch( b );
+	}
+	for ( int i = 0; i < _height; i++ ) {
+		move( i, _width );
+		addch( b );
+	} 
 
 	// process the snake
 	std::vector<snakePart>	snakeTemp = snake.getSnake();
@@ -112,7 +129,12 @@ void	Ncurses::render( Snake& snake ) {
 	}
 
 	// print food to window
-	mvwaddch(_win, snake.food.x/10, snake.food.x/10, f);
+	move( _height - 1, 1 );
+	printw( std::to_string(snake.food.x/10).c_str() );
+	move( _height - 1, 6 );
+	printw( std::to_string(snake.food.y/10).c_str() );
+	move( snake.food.y/10, snake.food.x/10 );
+	addch( f );
 	refresh();
 	return;
 }
