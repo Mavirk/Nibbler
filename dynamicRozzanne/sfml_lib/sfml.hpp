@@ -27,7 +27,7 @@ class SFML : public IGraphics{
 		SFML&	operator=( const SFML& rhs );
 		~SFML( void );
 
-		void	init( int width, int height, int size );
+		bool	init( int width, int height, int size );
 		bool	running( void );
 		char	handleInput( void );
 		void	render( Snake& snake );

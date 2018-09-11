@@ -31,7 +31,7 @@ class SDL : public IGraphics{
 		SDL&	operator=( const SDL& rhs );
 		~SDL( void );
 		
-		void	init( int width, int height, int size );
+		bool	init( int width, int height, int size );
 		char	handleInput( void );
 		void	render( Snake& snake );
 		void	clean( void );

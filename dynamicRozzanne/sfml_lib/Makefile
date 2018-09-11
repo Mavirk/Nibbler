@@ -1,8 +1,10 @@
 NAME		=	sfml.so
-SRC			=	$(shell ls | grep ".cpp")
-OBJ			=	$(subst .cpp,.o,$(SRC))
+SRC			=	sfml.cpp \
+				../Snake.cpp
 
-CPP			=	g++ -std=c++11
+OBJ			=	$(patsubst %.cpp, %.o, $(SRC))
+
+CPP			=	clang++ -std=c++11 -stdlib=libc++
 CPPFLAGS	=	-Wall -Wextra -Werror 
 LDFLAGS		=	-dynamiclib -flat_namespace
 INCLUDE		= 	-I ~/.brew/include
@@ -11,12 +13,12 @@ LIB			=	-L ~/.brew/lib -lsfml-system -lsfml-window -lsfml-graphics
 all: $(NAME)
 
 $(NAME):
-	$(CPP) $(CPPFLAGS) $(LDFLAGS) $(SRC) ../Snake.cpp ../IGraphics.cpp $(INCLUDE) $(LIB) -o $(NAME) 
-
-re: fclean all
+	$(CPP) $(CPPFLAGS) $(LDFLAGS) $(SRC) $(INCLUDE) $(LIB) -o $(NAME) 
 
 clean:
 	rm -rf $(OBJ)
 
 fclean: clean
 	rm -rf $(NAME)
+
+re: fclean all

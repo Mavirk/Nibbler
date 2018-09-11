@@ -1,11 +1,13 @@
 #include "Allegro.hpp"
 
 extern "C" Allegro* create_object(){
-  return new Allegro;
+	std::cout << "Lib Allegro Object created" << std::endl;
+	return new Allegro;
 }
 
 extern "C" void destroy_object( Allegro* object ){
 	delete object;
+	std::cout << "Lib Allegro Object destroyed" << std::endl;
 }
 
 Allegro::Allegro( void ) {
@@ -34,7 +36,8 @@ Allegro::~Allegro( void ) {
 	return ;
 }
 
-void	Allegro::init( int width, int height, int size ) {
+bool	Allegro::init( int width, int height, int size ) {
+	std::cout << "INIT ALD WINDOW" << std::endl;
 	ALLEGRO_MONITOR_INFO	info;
 
 	this->maxWidth = width * 2;
@@ -45,6 +48,7 @@ void	Allegro::init( int width, int height, int size ) {
 	if ( !al_init() ) {
 		std::cout << "Allegro not init" << std::endl;
 		this->_isRunning = false;
+		return false;
 	}
 
 	// create game window
@@ -52,6 +56,7 @@ void	Allegro::init( int width, int height, int size ) {
 	if ( !this->_win ) {
 		std::cout << "Display was not created" << std::endl;
 		this->_isRunning = false;
+		return false;
 	}
 
 	al_set_window_title( this->_win, "Snake Game Allegro" );
@@ -65,6 +70,7 @@ void	Allegro::init( int width, int height, int size ) {
 	if ( !this->_font ) {
 		std::cout << "Could not load font" << std::endl;
 		this->_isRunning = false;
+		return false;
 	}
 
 	// load addons
@@ -74,6 +80,9 @@ void	Allegro::init( int width, int height, int size ) {
 	this->_eventQueue = al_create_event_queue();
 	al_register_event_source( this->_eventQueue, al_get_display_event_source( this->_win ) );
 	al_register_event_source( this->_eventQueue, al_get_keyboard_event_source() );
+	std::cout << "ALG window complete" << std::endl;
+
+	return true;
 }
 
 char	Allegro::handleInput( void ) {
@@ -147,4 +156,5 @@ bool	Allegro::running( void ) {
 void	Allegro::clean( void ) {
 	al_destroy_event_queue( this->_eventQueue );
 	al_destroy_display( this->_win );
+	std::cout << "ALG game is cleaned" << std::endl;
 }

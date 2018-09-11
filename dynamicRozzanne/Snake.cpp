@@ -14,10 +14,10 @@ Snake::Snake( void ) {
 	return ;
 }
 
-Snake::Snake( int maxX, int maxY, int size ) : _length( 5 ), _direction( 'l' ), _size( size ) {
+Snake::Snake( int maxX, int maxY, int size ) : _length( 4 ), _direction( 'l' ), _size( size ) {
 	this->maxX = maxX - this->_size;
 	this->maxY = maxY - (this->_size * 3);
-	this->xPos = (((this->maxX / this->_size) / 2) * this->_size) - (this->_length * this->_size);
+	this->xPos = (((this->maxX / this->_size) / 2) * this->_size);
 	this->yPos = (((this->maxY / this->_size) / 2) * this->_size);
 	this->eat = false;
 	this->score = 0;
@@ -106,19 +106,26 @@ bool	Snake::collision( void ) {
 
 void	Snake::makeFood( void ) {
 	bool	make = false;
+	int		tempX;
+	int		tempY;
+
 	while ( !make ) {
-		int		tempX = rand() % ( this->maxX/this->_size ) * this->_size;
-		int		tempY = rand() % ( this->maxY/this->_size ) * this->_size;
-		for ( unsigned int i = 0; i < snake.size(); i++ ){
-			if ( snake[i].x == tempX && snake[i].y == tempY )
-				continue ;
-		}
-		if ( tempX <= this->_size || tempY <= this->_size || tempX >= this->maxX || tempY >= this->maxY )
-			continue ;
-		this->food.x = tempX;
-		this->food.y = tempY;
+		tempX = rand() % ( this->maxX/this->_size ) * this->_size;
+		tempY = rand() % ( this->maxY/this->_size ) * this->_size;
 		make = true;
+		if ( tempX <= this->_size || tempY <= this->_size || tempX >= this->maxX || tempY >= this->maxY ) {
+			make = false;
+		} else {
+			for ( unsigned int i = 0; i < snake.size(); i++ ){
+				if ( snake[i].x == tempX && snake[i].y == tempY ) {
+					std::cout << "Food made conflict with snake part" << std::endl;
+					make = false;
+				}
+			}
+		}
 	}
+	this->food.x = tempX;
+	this->food.y = tempY;
 }
 
 int		Snake::getLength( void ) const {

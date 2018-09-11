@@ -28,7 +28,7 @@ class Allegro : public IGraphics{
 		Allegro&	operator=( const Allegro& rhs );
 		~Allegro( void );
 
-		void	init( int width, int height, int size );
+		bool	init( int width, int height, int size );
 		bool	running( void );
 		char	handleInput( void );
 		void	render( Snake& snake );

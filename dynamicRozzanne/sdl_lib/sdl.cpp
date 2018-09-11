@@ -1,11 +1,13 @@
 #include "sdl.hpp"
 
 extern "C" SDL* create_object(){
-  return new SDL;
+	std::cout << "Lib SDL Object created" << std::endl;
+	return new SDL;
 }
 
 extern "C" void destroy_object( SDL* object ){
 	delete object;
+	std::cout << "Lib SDL Object destroyed" << std::endl;
 }
 
 SDL::SDL( void ) : _size( 10 ) {
@@ -41,7 +43,7 @@ SDL::~SDL( void ) {
 	return ;
 }
 
-void	SDL::init( int width, int height, int size ) {
+bool	SDL::init( int width, int height, int size ) {
 	if ( SDL_Init(SDL_INIT_EVERYTHING) == 0 ) {
 		std::cout << "Subsystems init" << std::endl;
 
@@ -64,15 +66,21 @@ void	SDL::init( int width, int height, int size ) {
 		this->_isRunning = true;
 	} else {
 		this->_isRunning = false;
+		return false;
 	}
 
 	if ( TTF_Init() == -1 ) {
 		this->_isRunning = false;
+		return false;
 	}
 
 	this->_font = TTF_OpenFont( "OpenSans-ExtraBold.ttf", 18 );
-	if ( this->_font == NULL )
+	if ( this->_font == NULL ) {
 		this->_isRunning = false;
+		return false;
+	}
+
+	return true;
 }
 
 char	SDL::handleInput( void ) {

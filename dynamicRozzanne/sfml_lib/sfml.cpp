@@ -1,11 +1,13 @@
 #include "sfml.hpp"
 
 extern "C" SFML* create_object(){
-  return new SFML;
+	std::cout << "Lib SFML Object created" << std::endl;
+	return new SFML;
 }
 
 extern "C" void destroy_object( SFML* object ){
 	delete object;
+	std::cout << "Lib SFML Object destroyed" << std::endl;
 }
 
 SFML::SFML( void ) {
@@ -35,7 +37,7 @@ SFML::~SFML( void ) {
 	return ;
 }
 
-void	SFML::init( int width, int height, int size ) {
+bool	SFML::init( int width, int height, int size ) {
 	std::cout << "INIT WINDOW" << std::endl;
 	this->_size = size * 2;
 	this->maxWidth = width * 2;
@@ -49,11 +51,15 @@ void	SFML::init( int width, int height, int size ) {
 	} else {
 		std::cout << "Error: The window did not open" << std::endl;
 		this->_isRunning = false;
+		return false;
 	}
 
 	if ( !this->_font.loadFromFile( "OpenSans-ExtraBold.ttf" ) ) {
 		this->_isRunning = false;
+		return false;
 	}
+
+	return true;
 }
 
 char	SFML::handleInput( void ) {
@@ -151,4 +157,5 @@ bool	SFML::running( void ) {
 
 void	SFML::clean( void ) {
 	this->_win->close();
+	std::cout << "SDL game is cleaned" << std::endl;
 }

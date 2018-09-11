@@ -1,12 +1,13 @@
-CXX = g++
-
 NAME = nibbler
 
-CFLAGS = -Wall -Werror -Wextra 
+CPP			=	clang++ -std=c++11 -stdlib=libc++
+CFLAGS		=	-Wall -Werror -Wextra 
 
-LIB_FLAG = -dynamiclib -flat_namespace
+LIB_FLAG	=	-dynamiclib -flat_namespace
 
-SRC = 	main.cpp Gamer.cpp Snake.cpp
+SRC			=	main.cpp \
+				Game.cpp \
+				Snake.cpp
 
 #OBJ = $(SRC:.cpp=.o)
 
@@ -15,11 +16,13 @@ SRC = 	main.cpp Gamer.cpp Snake.cpp
 
 all: $(NAME)
 
-$(NAME): sfml sdl2 alg
+$(NAME): dynamic
+	$(CPP) $(CFLAGS) $(SRC) -o $(NAME)
+
+dynamic: sfml sdl2 alg
 	@cp allegro_lib/alg.so ./
 	@cp sdl_lib/sdl.so ./
 	@cp sfml_lib/sfml.so ./
-	@$(CXX) $(CFLAGS) $(SRC) -o $(NAME)
 
 alg:
 	@make -C allegro_lib
@@ -29,9 +32,6 @@ sdl2:
 
 sfml:
 	@make -C sfml_lib
-
-#example: src/main.cpp libcircle.so
-#	@g++ -o example src/main.cpp -ldl
 
 clean:
 	@make -C sdl_lib clean

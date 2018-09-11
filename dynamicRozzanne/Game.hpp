@@ -13,7 +13,6 @@
 
 class Game {
 	private:
-		// Graphics	_gfx;
 		Snake		_snake;
 		int			_size;
 		int			_width;
@@ -29,13 +28,12 @@ class Game {
 
 		Game( void );
 		Game(std::string l, int width, int height, int size );
-		//Game( std::string gfx, int width, int height );
 		~Game( void );
 
 		void	run();
-		bool 	loadLib(int i);
+		bool 	loadLib( int libInput );
 		
-		void	init(  int width, int height );
+		bool	init( void );
 		void	handleEvents( void );
 		void	render( void );
 		void	clean( void );
