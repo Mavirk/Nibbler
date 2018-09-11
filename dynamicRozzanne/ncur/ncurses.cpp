@@ -37,8 +37,8 @@ Ncurses::~Ncurses( void ) {
 
 bool	Ncurses::init( int width, int height, int size ) {
 	_size = size;
-	_width = width;
-	_height = height;
+	_width = width / size;
+	_height = height / size;
 	_win = initscr();
     nodelay(stdscr, true);
     keypad(stdscr, true);
@@ -88,14 +88,22 @@ void	Ncurses::render( Snake& snake ) {
 
 	// render the boarder etc
 	// top boarder
+	for ( int i = 0; i < _width; i++ ) {
+		mvwaddch(_win, 0, i, b);
+	}
 
 	// left boarder
 	for ( int i = 0; i < _height; i++ ) {
-		move( 0, i );
-		addch( b );
+		mvwaddch(_win, i, 0, b);
 	}
 	// right boarder
+	for ( int i = 0; i < _height; i++ ) {
+		mvwaddch(_win, _width, i, b);
+	}
 	// bottom boarder
+	for ( int i = 0; i < _width; i++ ) {
+		mvwaddch(_win, i, _height, b);
+	}
 
 	// process the snake
 	std::vector<snakePart>	snakeTemp = snake.getSnake();
