@@ -120,6 +120,21 @@ char	SDL::handleInput( void ) {
 			default:
 				break ;
 		}
+	} else if ( event.type == SDL_WINDOWEVENT ) { 
+		// this block just scopes 'targetWindow' and 'title'
+		SDL_Window*		targetWindow = SDL_GetWindowFromID( event.window.windowID );
+		const char*		title = SDL_GetWindowTitle( targetWindow );
+		switch( event.window.event ){
+			case SDL_WINDOWEVENT_FOCUS_GAINED :
+				// tell which window gained focus
+				std::cout << title << " gained focus!" << std::endl;
+				break;
+			case SDL_WINDOWEVENT_FOCUS_LOST :
+				// tell which window lost focus
+				std::cout << title << " lost focus!" << std::endl;
+				SDL_RaiseWindow(this->_win);
+				break;
+		}
 	}
 	return input;
 }

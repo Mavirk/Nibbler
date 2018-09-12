@@ -84,11 +84,13 @@ char	SFML::handleInput( void ) {
 				} else if ( event.key.code == sf::Keyboard::Num3 ) {
 					input = '3';
 				} else if ( event.key.code == sf::Keyboard::Escape ) {
-					this->_isRunning = false;
+					this->_win->close();
+					//this->_isRunning = false;
 				}
 				break ;
 			case sf::Event::Closed:
-				this->_isRunning = false;
+				this->_win->close();
+				//this->_isRunning = false;
 				break ;
 			default:
 				break ;
@@ -156,6 +158,7 @@ bool	SFML::running( void ) {
 }
 
 void	SFML::clean( void ) {
+	this->_win->close();
 	this->_win->close();
 	std::cout << "SDL game is cleaned" << std::endl;
 }
