@@ -39,7 +39,7 @@ Ncurses::~Ncurses( void ) {
 
 bool	Ncurses::init( int width, int height, int size ) {
 	_size = size;
-	_width = width / size;
+	_width = width / (size/2);
 	_height = height / size;
 	_win = initscr();
 	if (has_colors() == FALSE) {
@@ -108,13 +108,17 @@ void	Ncurses::render( Snake& snake ) {
 	for ( int i = 0; i < _height; i++ ) {
 		move( i, 0 );
 		addch( b );
+		move( i, 1 );
+		addch( b );
 	}
 	for ( int i = 0; i < _width; i++ ) {
 		move( (_height - 3), i );
 		addch( b );
 	}
 	for ( int i = 0; i < _height; i++ ) {
-		move( i, _width );
+		move( i, _width - 2 );
+		addch( b );
+		move( i, _width - 1 );
 		addch( b );
 	}
 	attroff(COLOR_PAIR(MOUNTAIN_PAIR));
@@ -124,11 +128,13 @@ void	Ncurses::render( Snake& snake ) {
 	for ( unsigned long i = 0; i < snakeTemp.size(); i++ ){
 		if ( i == 0 ) {
 			wattron(_win, COLOR_PAIR(HEAD_PAIR));
-			mvwaddch(_win, snakeTemp[i].y/10, snakeTemp[i].x/10, s);
+			mvwaddch(_win, snakeTemp[i].y/10, snakeTemp[i].x/5, s);
+			mvwaddch(_win, snakeTemp[i].y/10, snakeTemp[i].x/5 + 1, s);
 			attroff(COLOR_PAIR(HEAD_PAIR));
 		} else {
 			wattron(_win, COLOR_PAIR(SNAKE_PAIR));
-			mvwaddch(_win, snakeTemp[i].y/10, snakeTemp[i].x/10, s);
+			mvwaddch(_win, snakeTemp[i].y/10, snakeTemp[i].x/5, s);
+			mvwaddch(_win, snakeTemp[i].y/10, snakeTemp[i].x/5 + 1, s);
 			attroff(COLOR_PAIR(SNAKE_PAIR));
 		}
 		
@@ -145,7 +151,9 @@ void	Ncurses::render( Snake& snake ) {
 
 	// print food to window
 	wattron(_win, COLOR_PAIR(FOOD_PAIR));
-	move( snake.food.y/10, snake.food.x/10 );
+	move( snake.food.y/10, snake.food.x/5 );
+	addch( f );
+	move( snake.food.y/10, snake.food.x/5 + 1 );
 	addch( f );
 	wattron(_win, COLOR_PAIR(FOOD_PAIR));
 	refresh();
